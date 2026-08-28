@@ -1,4 +1,4 @@
-const CACHE_NAME = 'app-v1';
+const CACHE_NAME = 'fuzzy-app-v1';
 const urlsToCache = [
   './index.html',
   './manifest.json'
@@ -17,5 +17,4 @@ self.addEventListener('fetch', event => {
       .then(response => response || fetch(event.request))
   );
 });
-
 
