@@ -3,466 +3,801 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>اپلیکیشن مدیریت کاربردی</title>
-    
-    <!-- تنظیمات PWA و iOS -->
+    <title>سامانه تصمیم‌گیری و بهره‌وری فازی</title>
+
+    <!-- PWA Settings for iOS -->
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="برنامه‌ریز">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/906/906334.png">
+    <meta name="apple-mobile-web-app-title" content="سیستم فازی">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2103/2103633.png">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Vazirmatn -->
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Vazirmatn Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Vazirmatn', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Vazirmatn', 'sans-serif'] },
                     colors: {
-                        brand: {
-                            50: '#faf5ff',
-                            100: '#f3e8ff',
-                            500: '#a855f7',
-                            600: '#9333ea',
-                            700: '#7e22ce',
-                        }
+                        brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0284c7', 600: '#0369a1', 700: '#075985' }
                     }
                 }
             }
         }
     </script>
     <style>
-        body {
-            font-family: 'Vazirmatn', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.25s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        body { font-family: 'Vazirmatn', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.25s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200 pb-12">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen pb-12">
 
-    <div class="max-w-5xl mx-auto px-4 py-6">
+    <div class="max-w-6xl mx-auto px-4 py-6">
         <!-- هدر اصلی -->
         <header class="flex flex-col md:flex-row md:items-center justify-between pb-6 mb-6 border-b border-slate-200 dark:border-slate-800 gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
-                    <i class="fa-solid fa-layer-group text-xl"></i>
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
+                    <i class="fa-solid fa-brain text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold bg-gradient-to-l from-brand-600 to-violet-600 bg-clip-text text-transparent">
-                        سامانه مدیریت روزانه
+                    <h1 class="text-xl font-bold bg-gradient-to-l from-brand-600 to-indigo-600 bg-clip-text text-transparent">
+                        سامانه استنتاج فازی و بهینه‌سازی بهره‌وری
                     </h1>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">مدیریت وظایف، یادداشت‌ها و زمان تمرکز</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">تعریف سیستم، قوانین فازی گوسی و تحلیل تارگت‌گذاری</p>
                 </div>
             </div>
 
-            <!-- دکمه‌های کنترلی هدر -->
+            <!-- انتخاب سیستم فعال و دکمه دارک مود -->
             <div class="flex items-center gap-3">
-                <button id="themeToggle" onclick="toggleTheme()" class="p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
-                    <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
-                </button>
-                <div class="text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-600 dark:text-slate-300">
-                    <i class="fa-regular fa-clock ml-1 text-brand-500"></i>
-                    <span id="currentTime">00:00</span>
+                <div class="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 shadow-sm">
+                    <span class="text-xs text-slate-500">سیستم فعال:</span>
+                    <select id="activeSystemSelect" onchange="changeActiveSystem(this.value)" class="bg-transparent font-bold text-xs text-brand-600 dark:text-brand-500 focus:outline-none">
+                        <!-- سیستم‌ها اینجاست -->
+                    </select>
                 </div>
+                <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                </button>
             </div>
         </header>
 
         <!-- ناوبری تب‌ها -->
-        <div class="bg-white dark:bg-slate-800 p-1.5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 mb-8 sticky top-4 z-10">
+        <div class="bg-white dark:bg-slate-800 p-1.5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 mb-8 sticky top-4 z-20">
             <nav class="grid grid-cols-3 gap-2 text-center text-sm font-medium">
-                <button id="tab-btn-tasks" onclick="switchTab('tasks')" 
-                    class="tab-btn flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition duration-200 bg-brand-600 text-white font-semibold shadow-md shadow-brand-500/20">
-                    <i class="fa-solid fa-list-check"></i>
-                    <span class="hidden sm:inline">مدیریت</span> کارها
+                <button id="tab-btn-system" onclick="switchTab('system')" 
+                    class="tab-btn flex items-center justify-center gap-2 py-3 px-3 rounded-xl transition duration-200 bg-brand-600 text-white font-semibold shadow-md shadow-brand-500/20">
+                    <i class="fa-solid fa-cubes"></i>
+                    <span>تب سیستم</span>
                 </button>
 
-                <button id="tab-btn-notes" onclick="switchTab('notes')" 
-                    class="tab-btn flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700">
-                    <i class="fa-solid fa-note-sticky"></i>
-                    <span>یادداشت‌ها</span>
+                <button id="tab-btn-rules" onclick="switchTab('rules')" 
+                    class="tab-btn flex items-center justify-center gap-2 py-3 px-3 rounded-xl transition duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700/50">
+                    <i class="fa-solid fa-code-branch"></i>
+                    <span>تب قوانین</span>
                 </button>
 
-                <button id="tab-btn-pomodoro" onclick="switchTab('pomodoro')" 
-                    class="tab-btn flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700">
-                    <i class="fa-solid fa-stopwatch"></i>
-                    <span>تمرکز</span>
+                <button id="tab-btn-productivity" onclick="switchTab('productivity')" 
+                    class="tab-btn flex items-center justify-center gap-2 py-3 px-3 rounded-xl transition duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700/50">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>تب بهره‌وری</span>
                 </button>
             </nav>
         </div>
 
-        <!-- محتوای تب ۱: مدیریت کارها -->
-        <section id="tab-content-tasks" class="tab-content active space-y-6">
+        <!-- ================= تب ۱: سیستم ================= -->
+        <section id="tab-content-system" class="tab-content active space-y-6">
+            <!-- فرم ساخت سیستم جدید -->
             <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
-                <h2 class="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-slate-100">
+                <h2 class="text-base font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-slate-100">
                     <i class="fa-solid fa-plus-circle text-brand-500"></i>
-                    افزودن کار جدید
+                    ایجاد سیستم جدید
                 </h2>
-                <form onsubmit="addTask(event)" class="flex flex-col sm:flex-row gap-3">
-                    <input type="text" id="taskInput" placeholder="مثلاً: مطالعه کتاب..." required
-                        class="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white transition">
-                    <select id="taskCategory" class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white transition">
-                        <option value="کاری">💼 کاری</option>
-                        <option value="شخصی">👤 شخصی</option>
-                        <option value="آموزش">📚 آموزش</option>
-                    </select>
-                    <button type="submit" class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-medium transition shadow-md shadow-brand-500/20 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-add"></i>
-                        افزودن
+                <form onsubmit="createSystem(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold mb-1 text-slate-600 dark:text-slate-300">نام سیستم</label>
+                            <input type="text" id="sysName" placeholder="مثلاً: سیستم ارزیابی ریسک صنعتی" required
+                                class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1 text-slate-600 dark:text-slate-300">توضیحات مختصر</label>
+                            <input type="text" id="sysDesc" placeholder="توضیح عملکرد سیستم..."
+                                class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                    </div>
+                    <button type="submit" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-medium transition shadow-md shadow-brand-500/20">
+                        <i class="fa-solid fa-save ml-1"></i> ایجاد سیستم
                     </button>
                 </form>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
-                <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-700">
-                    <h3 class="font-bold text-slate-800 dark:text-slate-100">فهرست وظایف</h3>
-                    <div class="flex gap-1.5">
-                        <button onclick="filterTasks('all')" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium">همه</button>
-                        <button onclick="filterTasks('active')" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium">جاری</button>
-                        <button onclick="filterTasks('completed')" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium">انجام‌شده</button>
-                    </div>
-                </div>
-
-                <ul id="taskList" class="space-y-3"></ul>
+            <!-- مدیریت فیچرهای سیستم انتخاب‌شده -->
+            <div id="activeSystemDetails" class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
+                <!-- بخش فیچرها متحرک لود می‌شود -->
             </div>
         </section>
 
-        <!-- محتوای تب ۲: دفترچه یادداشت -->
-        <section id="tab-content-notes" class="tab-content space-y-6">
+        <!-- ================= تب ۲: قوانین فازی ================= -->
+        <section id="tab-content-rules" class="tab-content space-y-6">
+            <!-- فرم ساخت قانون جدید -->
             <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
-                <h2 class="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-slate-100">
-                    <i class="fa-solid fa-pen-to-square text-violet-500"></i>
-                    ثبت یادداشت جدید
+                <h2 class="text-base font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-slate-100">
+                    <i class="fa-solid fa-diagram-project text-indigo-500"></i>
+                    افزودن قانون فازی جدید (If ... Then)
                 </h2>
-                <div class="space-y-3">
-                    <input type="text" id="noteTitle" placeholder="عنوان یادداشت..." 
-                        class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 dark:text-white transition">
-                    <textarea id="noteContent" rows="3" placeholder="متن یادداشت..." 
-                        class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 dark:text-white transition"></textarea>
-                    <div class="flex justify-end">
-                        <button onclick="addNote()" class="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-medium transition shadow-md shadow-violet-500/20 flex items-center gap-2">
-                            <i class="fa-solid fa-save"></i>
-                            ذخیره
-                        </button>
-                    </div>
+
+                <div id="ruleBuilderContainer" class="space-y-4">
+                    <!-- سازنده فرم قانون -->
                 </div>
             </div>
 
-            <div id="notesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            <!-- لیست قوانین ثبت شده -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-4 pb-2 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                    <span>قوانین فازی تعریف‌شده برای سیستم جاری</span>
+                    <span id="rulesCountBadge" class="text-xs bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 px-2.5 py-1 rounded-lg">0 قانون</span>
+                </h3>
+                <div id="rulesList" class="space-y-3">
+                    <!-- لیست قوانین -->
+                </div>
+            </div>
+
+            <!-- بازه امن متغیرهای خروجی (Safe Zones) -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                    تعیین بازه امن (Safe Zone) برای متغیرهای خروجی (Conclusion)
+                </h3>
+                <p class="text-xs text-slate-500 mb-4">محدوده ایمن عملکرد سیستم که در فرآیند بهره‌وری نباید از آن خارج شد.</p>
+
+                <div id="safeZonesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- کادرهای تعیین بازه امن -->
+                </div>
+            </div>
         </section>
 
-        <!-- محتوای تب ۳: تمرکز -->
-        <section id="tab-content-pomodoro" class="tab-content space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="md:col-span-2 bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm text-center">
-                    <h2 class="text-lg font-bold mb-2 text-slate-800 dark:text-slate-100">تایمر تمرکز (پومودورو)</h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">۲۵ دقیقه تمرکز بدون حواس‌پرتی</p>
+        <!-- ================= تب ۳: بهره‌وری ================= -->
+        <section id="tab-content-productivity" class="tab-content space-y-6">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
+                <h2 class="text-base font-bold mb-2 flex items-center gap-2 text-slate-800 dark:text-slate-100">
+                    <i class="fa-solid fa-bullseye text-rose-500"></i>
+                    تارگت‌گذاری و بهینه‌سازی سیستم
+                </h2>
+                <p class="text-xs text-slate-500 mb-6">مقدار تارگت مدنظر خود را برای خروجی‌ها تعیین کنید. سیستم قوانین را آنالیز کرده و بهترین مقدار متغیرهای ورودی را با حفظ شرایط امن پیشنهاد می‌دهد.</p>
 
-                    <div class="relative w-48 h-48 mx-auto flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-900 border-4 border-brand-500 shadow-inner mb-6">
-                        <span id="timerDisplay" class="text-4xl font-extrabold font-mono text-slate-800 dark:text-slate-100">25:00</span>
-                    </div>
-
-                    <div class="flex justify-center gap-3">
-                        <button id="startTimerBtn" onclick="toggleTimer()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium transition flex items-center gap-2">
-                            <i id="timerBtnIcon" class="fa-solid fa-play"></i>
-                            <span id="timerBtnText">شروع</span>
-                        </button>
-                        <button onclick="resetTimer()" class="px-6 py-2.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-xl font-medium transition flex items-center gap-2">
-                            <i class="fa-solid fa-rotate-left"></i>
-                            بازنشانی
-                        </button>
-                    </div>
+                <div id="productivityInputs" class="space-y-4 mb-6">
+                    <!-- اینپوت‌های تارگت -->
                 </div>
 
-                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-4 pb-2 border-b border-slate-100 dark:border-slate-700">خلاصه عملکرد</h3>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl">
-                                <span class="text-xs text-slate-500">کل کارها:</span>
-                                <span id="statTotal" class="font-bold">0</span>
-                            </div>
-                            <div class="flex justify-between items-center bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-xl">
-                                <span class="text-xs text-emerald-600">تکمیل‌شده:</span>
-                                <span id="statCompleted" class="font-bold text-emerald-600">0</span>
-                            </div>
-                            <div class="flex justify-between items-center bg-violet-50 dark:bg-violet-900/20 p-3 rounded-xl">
-                                <span class="text-xs text-violet-600">یادداشت‌ها:</span>
-                                <span id="statNotes" class="font-bold text-violet-600">0</span>
-                            </div>
-                        </div>
-                    </div>
+                <button onclick="calculateProductivityOptimization()" class="w-full md:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    محاسبه پیشنهادهای بهینه‌سازی
+                </button>
+            </div>
+
+            <!-- نتایج بهینه‌سازی -->
+            <div id="productivityResults" class="hidden bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 pb-2 border-b border-slate-100 dark:border-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                    نتیجه استنتاج و پیشنهادات سیستم
+                </h3>
+                <div id="optimizationOutputText" class="text-sm leading-relaxed space-y-3 text-slate-700 dark:text-slate-300">
+                    <!-- متن خروجی تحلیل فازی -->
                 </div>
             </div>
         </section>
     </div>
 
+    <!-- اسکریپت اصلی برنامه -->
     <script>
-        // ثبت Service Worker برای قابلیت PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Fail:', err));
-            });
-        }
+        // --- ساختار داده‌ها (State) ---
+        let appData = JSON.parse(localStorage.getItem('fuzzy_app_data')) || {
+            activeSystemId: 1,
+            systems: [
+                {
+                    id: 1,
+                    name: 'سیستم کنترل ریسک و دما',
+                    description: 'بررسی اثر دما و فشار بر ریسک عملیاتی',
+                    features: [
+                        { id: 'f1', name: 'Temperature', type: 'premise', min: 0, max: 100 },
+                        { id: 'f2', name: 'Pressure', type: 'premise', min: 0, max: 50 },
+                        { id: 'f3', name: 'Risk', type: 'conclusion', min: 0, max: 100, safeMin: 10, safeMax: 40 }
+                    ],
+                    rules: [
+                        {
+                            id: 'r1',
+                            premises: [
+                                { featureId: 'f1', value: 'low' },
+                                { featureId: 'f2', value: 'low' }
+                            ],
+                            operator: 'AND',
+                            conclusions: [
+                                { featureId: 'f3', value: 'low' }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
 
-        let tasks = JSON.parse(localStorage.getItem('my_tasks')) || [
-            { id: 1, title: 'طراحی اولیه اپلیکیشن', category: 'کاری', completed: true },
-            { id: 2, title: 'مطالعه و تمرکز', category: 'آموزش', completed: false }
-        ];
+        const LINGUISTIC_VALUES = ['low', 'medium', 'high'];
+        const LINGUISTIC_FA = { low: 'کم (Low)', medium: 'متوسط (Medium)', high: 'زیاد (High)' };
 
-        let notes = JSON.parse(localStorage.getItem('my_notes')) || [
-            { id: 1, title: 'یادداشت نمونه', content: 'این یک یادداشت نمونه است.', date: '۱۴۰۲/۰۶/۱۰' }
-        ];
-
-        let currentFilter = 'all';
-        let timerSeconds = 25 * 60;
-        let timerInterval = null;
-        let isTimerRunning = false;
-
+        // --- ذخیره‌سازی داده‌ها ---
         function saveData() {
-            localStorage.setItem('my_tasks', JSON.stringify(tasks));
-            localStorage.setItem('my_notes', JSON.stringify(notes));
-            updateStats();
+            localStorage.setItem('fuzzy_app_data', JSON.stringify(appData));
+            renderAll();
         }
 
+        function getActiveSystem() {
+            return appData.systems.find(s => s.id === appData.activeSystemId) || appData.systems[0];
+        }
+
+        // --- مدیریت تب‌ها ---
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = "tab-btn flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700";
+                btn.className = "tab-btn flex items-center justify-center gap-2 py-3 px-3 rounded-xl transition duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700/50";
             });
 
             document.getElementById(`tab-content-${tabName}`).classList.add('active');
             const activeBtn = document.getElementById(`tab-btn-${tabName}`);
-            activeBtn.className = "tab-btn flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition duration-200 bg-brand-600 text-white font-semibold shadow-md shadow-brand-500/20";
+            activeBtn.className = "tab-btn flex items-center justify-center gap-2 py-3 px-3 rounded-xl transition duration-200 bg-brand-600 text-white font-semibold shadow-md shadow-brand-500/20";
         }
 
-        function renderTasks() {
-            const listEl = document.getElementById('taskList');
-            listEl.innerHTML = '';
+        // --- رندر کلی برنامه ---
+        function renderAll() {
+            renderActiveSystemSelect();
+            renderSystemTab();
+            renderRulesTab();
+            renderProductivityTab();
+        }
 
-            const filteredTasks = tasks.filter(t => {
-                if (currentFilter === 'active') return !t.completed;
-                if (currentFilter === 'completed') return t.completed;
-                return true;
-            });
+        function renderActiveSystemSelect() {
+            const select = document.getElementById('activeSystemSelect');
+            select.innerHTML = appData.systems.map(s => 
+                `<option value="${s.id}" ${s.id === appData.activeSystemId ? 'selected' : ''}>${s.name}</option>`
+            ).join('');
+        }
 
-            if (filteredTasks.length === 0) {
-                listEl.innerHTML = `<li class="text-center py-6 text-slate-400 text-sm">موردی یافت نشد.</li>`;
-                saveData();
-                return;
-            }
-
-            filteredTasks.forEach(task => {
-                const li = document.createElement('li');
-                li.className = `flex items-center justify-between p-3.5 rounded-xl border transition ${
-                    task.completed 
-                        ? 'bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 opacity-70' 
-                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm'
-                }`;
-
-                li.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <button onclick="toggleTask(${task.id})" class="w-6 h-6 rounded-lg border flex items-center justify-center transition ${
-                            task.completed ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 dark:border-slate-600'
-                        }">
-                            ${task.completed ? '<i class="fa-solid fa-check text-xs"></i>' : ''}
-                        </button>
-                        <span class="text-sm font-medium ${task.completed ? 'line-through text-slate-400' : 'text-slate-800 dark:text-slate-200'}">
-                            ${task.title}
-                        </span>
-                        <span class="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
-                            ${task.category}
-                        </span>
-                    </div>
-                    <button onclick="deleteTask(${task.id})" class="text-slate-400 hover:text-rose-500 transition p-1">
-                        <i class="fa-regular fa-trash-can"></i>
-                    </button>
-                `;
-                listEl.appendChild(li);
-            });
-
+        function changeActiveSystem(id) {
+            appData.activeSystemId = parseInt(id);
             saveData();
         }
 
-        function addTask(e) {
+        // ================= مدیریت تب سیستم =================
+        function createSystem(e) {
             e.preventDefault();
-            const input = document.getElementById('taskInput');
-            const category = document.getElementById('taskCategory').value;
+            const name = document.getElementById('sysName').value.trim();
+            const desc = document.getElementById('sysDesc').value.trim();
+            if (!name) return;
 
-            if (!input.value.trim()) return;
-
-            tasks.push({
+            const newSys = {
                 id: Date.now(),
-                title: input.value.trim(),
-                category: category,
-                completed: false
-            });
+                name: name,
+                description: desc,
+                features: [],
+                rules: []
+            };
 
-            input.value = '';
-            renderTasks();
-        }
-
-        function toggleTask(id) {
-            tasks = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
-            renderTasks();
-        }
-
-        function deleteTask(id) {
-            tasks = tasks.filter(t => t.id !== id);
-            renderTasks();
-        }
-
-        function filterTasks(filter) {
-            currentFilter = filter;
-            renderTasks();
-        }
-
-        function renderNotes() {
-            const gridEl = document.getElementById('notesGrid');
-            gridEl.innerHTML = '';
-
-            if (notes.length === 0) {
-                gridEl.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400 text-sm">یادداشتی وجود ندارد.</div>`;
-                saveData();
-                return;
-            }
-
-            notes.forEach(note => {
-                const card = document.createElement('div');
-                card.className = "bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between";
-
-                card.innerHTML = `
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="font-bold text-slate-800 dark:text-slate-100">${note.title}</h3>
-                            <button onclick="deleteNote(${note.id})" class="text-slate-400 hover:text-rose-500 transition">
-                                <i class="fa-regular fa-trash-can"></i>
-                            </button>
-                        </div>
-                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-4">${note.content}</p>
-                    </div>
-                    <div class="text-[11px] text-slate-400 border-t border-slate-100 dark:border-slate-700/60 pt-2 text-left" dir="ltr">
-                        ${note.date}
-                    </div>
-                `;
-                gridEl.appendChild(card);
-            });
-
+            appData.systems.push(newSys);
+            appData.activeSystemId = newSys.id;
+            document.getElementById('sysName').value = '';
+            document.getElementById('sysDesc').value = '';
             saveData();
         }
 
-        function addNote() {
-            const titleEl = document.getElementById('noteTitle');
-            const contentEl = document.getElementById('noteContent');
+        function renderSystemTab() {
+            const sys = getActiveSystem();
+            const container = document.getElementById('activeSystemDetails');
+            if (!sys) return;
 
-            if (!titleEl.value.trim() || !contentEl.value.trim()) return;
+            container.innerHTML = `
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-700 pb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100">${sys.name}</h3>
+                        <p class="text-xs text-slate-500">${sys.description || 'بدون توضیح'}</p>
+                    </div>
+                    <button onclick="deleteSystem(${sys.id})" class="text-xs text-rose-500 hover:underline">حذف این سیستم</button>
+                </div>
 
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('fa-IR');
+                <!-- فرم افزودن فیچر -->
+                <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300">افزودن متغیر/فیچر به سیستم</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+                        <input type="text" id="featName" placeholder="نام متغیر (مثلاً Temperature)" class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs">
+                        <select id="featType" class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs">
+                            <option value="premise">مقدم (Premise / ورودی)</option>
+                            <option value="conclusion">نتیجه (Conclusion / خروجی)</option>
+                        </select>
+                        <input type="number" id="featMin" placeholder="مینی‌موم (Min)" class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs">
+                        <input type="number" id="featMax" placeholder="ماکزیمم (Max)" class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs">
+                        <button onclick="addFeature()" class="bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium py-2 transition">
+                            <i class="fa-solid fa-plus"></i> افزودن فیچر
+                        </button>
+                    </div>
+                </div>
 
-            notes.unshift({
-                id: Date.now(),
-                title: titleEl.value.trim(),
-                content: contentEl.value.trim(),
-                date: dateStr
+                <!-- لیست فیچرهای ثبت شده -->
+                <div>
+                    <h4 class="text-xs font-bold mb-3 text-slate-700 dark:text-slate-300">لیست فیچرهای تعریف شده:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        ${sys.features.length === 0 ? '<p class="text-xs text-slate-400">هیچ فیچری تعریف نشده است.</p>' : ''}
+                        ${sys.features.map(f => `
+                            <div class="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-sm text-slate-800 dark:text-slate-100">${f.name}</span>
+                                        <span class="text-[10px] px-2 py-0.5 rounded ${f.type === 'premise' ? 'bg-blue-100 text-blue-600' : 'bg-purple-100 text-purple-600'} font-semibold">
+                                            ${f.type === 'premise' ? 'ورودی (Premise)' : 'خروجی (Conclusion)'}
+                                        </span>
+                                    </div>
+                                    <span class="text-xs text-slate-400">بازه: [${f.min} تا ${f.max}]</span>
+                                </div>
+                                <button onclick="deleteFeature('${f.id}')" class="text-slate-400 hover:text-rose-500 text-xs">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function addFeature() {
+            const sys = getActiveSystem();
+            const name = document.getElementById('featName').value.trim();
+            const type = document.getElementById('featType').value;
+            const min = parseFloat(document.getElementById('featMin').value);
+            const max = parseFloat(document.getElementById('featMax').value);
+
+            if (!name || isNaN(min) || isNaN(max) || min >= max) {
+                alert('لطفاً اطلاعات فیچر را به‌درستی وارد کنید (مینی‌موم باید کمتر از ماکزیمم باشد).');
+                return;
+            }
+
+            const newFeat = {
+                id: 'f_' + Date.now(),
+                name,
+                type,
+                min,
+                max,
+                safeMin: type === 'conclusion' ? min : undefined,
+                safeMax: type === 'conclusion' ? max : undefined
+            };
+
+            sys.features.push(newFeat);
+            saveData();
+        }
+
+        function deleteFeature(featId) {
+            const sys = getActiveSystem();
+            sys.features = sys.features.filter(f => f.id !== featId);
+            saveData();
+        }
+
+        function deleteSystem(sysId) {
+            if (appData.systems.length <= 1) {
+                alert('حداقل یک سیستم باید وجود داشته باشد.');
+                return;
+            }
+            appData.systems = appData.systems.filter(s => s.id !== sysId);
+            appData.activeSystemId = appData.systems[0].id;
+            saveData();
+        }
+
+        // ================= مدیریت تب قوانین =================
+        function renderRulesTab() {
+            const sys = getActiveSystem();
+            renderRuleBuilder();
+            renderRulesList();
+            renderSafeZones();
+        }
+
+        function renderRuleBuilder() {
+            const sys = getActiveSystem();
+            const premises = sys.features.filter(f => f.type === 'premise');
+            const conclusions = sys.features.filter(f => f.type === 'conclusion');
+
+            const container = document.getElementById('ruleBuilderContainer');
+
+            if (premises.length === 0 || conclusions.length === 0) {
+                container.innerHTML = `<p class="text-xs text-amber-500 bg-amber-50 dark:bg-amber-900/20 p-3 rounded-xl">برای تعریف قانون فازی، ابتدا باید حداقل یک فیچر ورودی (Premise) و یک فیچر خروجی (Conclusion) در تب سیستم بسازید.</p>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <!-- انتخاب Premise ها -->
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl space-y-3">
+                        <span class="text-xs font-bold text-slate-700 dark:text-slate-300">مقدمات قانون (If):</span>
+                        <div id="rulePremisesList" class="space-y-2">
+                            <div class="rule-premise-row flex flex-wrap gap-2 items-center">
+                                <span class="text-xs font-bold text-indigo-500">اگر</span>
+                                <select class="premise-feat px-3 py-1.5 bg-white dark:bg-slate-800 border rounded-lg text-xs">
+                                    ${premises.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                                </select>
+                                <span class="text-xs">برابر است با</span>
+                                <select class="premise-val px-3 py-1.5 bg-white dark:bg-slate-800 border rounded-lg text-xs">
+                                    ${LINGUISTIC_VALUES.map(v => `<option value="${v}">${LINGUISTIC_FA[v]}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 pt-2">
+                            <button onclick="addPremiseRowToBuilder()" class="text-xs text-brand-600 font-semibold hover:underline">+ افزودن Premise دیگر</button>
+                            <div class="flex items-center gap-1 text-xs">
+                                <span>عملگر بین ورودی‌ها:</span>
+                                <select id="ruleOperator" class="px-2 py-1 bg-white dark:bg-slate-800 border rounded-md text-xs font-bold">
+                                    <option value="AND">AND (و)</option>
+                                    <option value="OR">OR (یا)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- انتخاب Conclusion ها -->
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl space-y-3">
+                        <span class="text-xs font-bold text-slate-700 dark:text-slate-300">نتایج قانون (Then):</span>
+                        <div id="ruleConclusionsList" class="space-y-2">
+                            <div class="rule-conclusion-row flex flex-wrap gap-2 items-center">
+                                <span class="text-xs font-bold text-emerald-500">آنگاه</span>
+                                <select class="conclusion-feat px-3 py-1.5 bg-white dark:bg-slate-800 border rounded-lg text-xs">
+                                    ${conclusions.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                                </select>
+                                <span class="text-xs">برابر خواهد بود با</span>
+                                <select class="conclusion-val px-3 py-1.5 bg-white dark:bg-slate-800 border rounded-lg text-xs">
+                                    ${LINGUISTIC_VALUES.map(v => `<option value="${v}">${LINGUISTIC_FA[v]}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="saveRuleFromBuilder()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition">
+                        ثبت قانون فازی
+                    </button>
+                </div>
+            `;
+        }
+
+        function addPremiseRowToBuilder() {
+            const sys = getActiveSystem();
+            const premises = sys.features.filter(f => f.type === 'premise');
+            const container = document.getElementById('rulePremisesList');
+            const row = document.createElement('div');
+            row.className = 'rule-premise-row flex flex-wrap gap-2 items-center pt-2 border-t border-slate-200 dark:border-slate-700';
+            row.innerHTML = `
+                <span class="text-xs font-bold text-indigo-500">و همچنین</span>
+                <select class="premise-feat px-3 py-1.5 bg-white dark:bg-slate-800 border rounded-lg text-xs">
+                    ${premises.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                </select>
+                <span class="text-xs">برابر است با</span>
+                <select class="premise-val px-3 py-1.5 bg-white dark:bg-slate-800 border rounded-lg text-xs">
+                    ${LINGUISTIC_VALUES.map(v => `<option value="${v}">${LINGUISTIC_FA[v]}</option>`).join('')}
+                </select>
+                <button onclick="this.parentElement.remove()" class="text-rose-500 text-xs mr-2">حذف</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function saveRuleFromBuilder() {
+            const sys = getActiveSystem();
+            const operator = document.getElementById('ruleOperator').value;
+
+            const premiseRows = document.querySelectorAll('.rule-premise-row');
+            const conclusionRows = document.querySelectorAll('.rule-conclusion-row');
+
+            const pList = [];
+            premiseRows.forEach(row => {
+                const featId = row.querySelector('.premise-feat').value;
+                const val = row.querySelector('.premise-val').value;
+                pList.push({ featureId: featId, value: val });
             });
 
-            titleEl.value = '';
-            contentEl.value = '';
-            renderNotes();
+            const cList = [];
+            conclusionRows.forEach(row => {
+                const featId = row.querySelector('.conclusion-feat').value;
+                const val = row.querySelector('.conclusion-val').value;
+                cList.push({ featureId: featId, value: val });
+            });
+
+            if (pList.length === 0 || cList.length === 0) return;
+
+            const newRule = {
+                id: 'r_' + Date.now(),
+                premises: pList,
+                operator: operator,
+                conclusions: cList
+            };
+
+            sys.rules.push(newRule);
+            saveData();
         }
 
-        function deleteNote(id) {
-            notes = notes.filter(n => n.id !== id);
-            renderNotes();
+        function renderRulesList() {
+            const sys = getActiveSystem();
+            const container = document.getElementById('rulesList');
+            document.getElementById('rulesCountBadge').innerText = `${sys.rules.length} قانون`;
+
+            if (sys.rules.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400">هنوز هیچ قانون فازی ثبت نشده است.</p>`;
+                return;
+            }
+
+            container.innerHTML = sys.rules.map((r, idx) => {
+                const premisesText = r.premises.map(p => {
+                    const feat = sys.features.find(f => f.id === p.featureId);
+                    return `<b class="text-indigo-600 dark:text-indigo-400">${feat ? feat.name : ''}</b> is <b>${LINGUISTIC_FA[p.value]}</b>`;
+                }).join(` <span class="bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-[10px] font-bold">${r.operator}</span> `);
+
+                const conclusionsText = r.conclusions.map(c => {
+                    const feat = sys.features.find(f => f.id === c.featureId);
+                    return `<b class="text-emerald-600 dark:text-emerald-400">${feat ? feat.name : ''}</b> is <b>${LINGUISTIC_FA[c.value]}</b>`;
+                }).join(', ');
+
+                return `
+                    <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 flex items-center justify-between text-xs">
+                        <div>
+                            <span class="font-bold text-slate-400 ml-2">قانون ${idx + 1}:</span>
+                            <span class="font-semibold">IF</span> ${premisesText} <span class="font-semibold">THEN</span> ${conclusionsText}
+                        </div>
+                        <button onclick="deleteRule('${r.id}')" class="text-slate-400 hover:text-rose-500">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
         }
 
-        function updateStats() {
-            document.getElementById('statTotal').innerText = tasks.length;
-            document.getElementById('statCompleted').innerText = tasks.filter(t => t.completed).length;
-            document.getElementById('statNotes').innerText = notes.length;
+        function deleteRule(ruleId) {
+            const sys = getActiveSystem();
+            sys.rules = sys.rules.filter(r => r.id !== ruleId);
+            saveData();
         }
 
-        function updateTimerDisplay() {
-            const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
-            const secs = (timerSeconds % 60).toString().padStart(2, '0');
-            document.getElementById('timerDisplay').innerText = `${mins}:${secs}`;
+        function renderSafeZones() {
+            const sys = getActiveSystem();
+            const conclusions = sys.features.filter(f => f.type === 'conclusion');
+            const container = document.getElementById('safeZonesContainer');
+
+            if (conclusions.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 col-span-full">هیچ متغیر خروجی تعریف نشده است.</p>`;
+                return;
+            }
+
+            container.innerHTML = conclusions.map(c => `
+                <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/30 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-xs text-slate-800 dark:text-slate-200">${c.name}</span>
+                        <span class="text-[10px] text-slate-400">بازه کل: [${c.min} - ${c.max}]</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                            <label class="block text-[10px] text-slate-500 mb-1">کف بازه امن (Min Safe)</label>
+                            <input type="number" value="${c.safeMin ?? c.min}" onchange="updateSafeZone('${c.id}', 'min', this.value)" 
+                                class="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-500 mb-1">سقف بازه امن (Max Safe)</label>
+                            <input type="number" value="${c.safeMax ?? c.max}" onchange="updateSafeZone('${c.id}', 'max', this.value)" 
+                                class="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border rounded-lg">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function toggleTimer() {
-            const btnText = document.getElementById('timerBtnText');
-            const btnIcon = document.getElementById('timerBtnIcon');
-
-            if (isTimerRunning) {
-                clearInterval(timerInterval);
-                isTimerRunning = false;
-                btnText.innerText = 'ادامه';
-                btnIcon.className = 'fa-solid fa-play';
-            } else {
-                isTimerRunning = true;
-                btnText.innerText = 'توقف';
-                btnIcon.className = 'fa-solid fa-pause';
-
-                timerInterval = setInterval(() => {
-                    if (timerSeconds > 0) {
-                        timerSeconds--;
-                        updateTimerDisplay();
-                    } else {
-                        clearInterval(timerInterval);
-                        isTimerRunning = false;
-                        btnText.innerText = 'شروع مجدد';
-                        btnIcon.className = 'fa-solid fa-play';
-                    }
-                }, 1000);
+        function updateSafeZone(featId, type, val) {
+            const sys = getActiveSystem();
+            const feat = sys.features.find(f => f.id === featId);
+            if (feat) {
+                if (type === 'min') feat.safeMin = parseFloat(val);
+                if (type === 'max') feat.safeMax = parseFloat(val);
+                saveData();
             }
         }
 
-        function resetTimer() {
-            clearInterval(timerInterval);
-            isTimerRunning = false;
-            timerSeconds = 25 * 60;
-            updateTimerDisplay();
-            document.getElementById('timerBtnText').innerText = 'شروع';
-            document.getElementById('timerBtnIcon').className = 'fa-solid fa-play';
+        // ================= مدیریت تب بهره‌وری و محاسبات فازی =================
+        function renderProductivityTab() {
+            const sys = getActiveSystem();
+            const conclusions = sys.features.filter(f => f.type === 'conclusion');
+            const container = document.getElementById('productivityInputs');
+
+            if (conclusions.length === 0) {
+                container.innerHTML = `<p class="text-xs text-amber-500">برای تارگت‌گذاری حداقل یک خروجی در تب سیستم ایجاد کنید.</p>`;
+                return;
+            }
+
+            container.innerHTML = conclusions.map(c => `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/30">
+                    <div>
+                        <span class="font-bold text-xs text-slate-800 dark:text-slate-100">${c.name} (خروجی)</span>
+                        <p class="text-[11px] text-slate-400">محدوده امن: [${c.safeMin ?? c.min} تا ${c.safeMax ?? c.max}]</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-slate-500">تارگت مدنظر:</span>
+                        <input type="number" id="target_${c.id}" value="${((c.min + c.max) / 2).toFixed(1)}" 
+                            class="w-24 px-3 py-1.5 bg-white dark:bg-slate-800 border rounded-lg text-xs font-bold text-emerald-600">
+                    </div>
+                </div>
+            `).join('');
         }
 
+        // --- توابع عضویت گوسی (Gaussian Membership Function) ---
+        function gaussianMF(x, mean, stdev) {
+            return Math.exp(-0.5 * Math.pow((x - mean) / stdev, 2));
+        }
+
+        function getFuzzyParams(min, max) {
+            const range = max - min;
+            return {
+                low: { mean: min, stdev: range / 4 },
+                medium: { mean: min + range / 2, stdev: range / 4 },
+                high: { mean: max, stdev: range / 4 }
+            };
+        }
+
+        // الگوریتم اصلی استنتاج فازی معکوس و بهینه‌سازی
+        function calculateProductivityOptimization() {
+            const sys = getActiveSystem();
+            const premises = sys.features.filter(f => f.type === 'premise');
+            const conclusions = sys.features.filter(f => f.type === 'conclusion');
+
+            if (premises.length === 0 || conclusions.length === 0 || sys.rules.length === 0) {
+                alert('لطفاً ابتدا فیچرهای ورودی/خروجی و قوانین فازی را کامل تعریف کنید.');
+                return;
+            }
+
+            // دریافت تارگت‌ها
+            const targets = {};
+            conclusions.forEach(c => {
+                const inputEl = document.getElementById(`target_${c.id}`);
+                targets[c.id] = parseFloat(inputEl.value);
+            });
+
+            // جستجوی بهترین ترکیب ورودی‌ها
+            let bestSample = null;
+            let minScore = Infinity;
+
+            const STEPS = 10; // دقت شبکه جستجو
+            const samples = [];
+
+            // تولید ترکیبات مختلف ورودی
+            function generateGrid(index, currentSample) {
+                if (index === premises.length) {
+                    samples.push({ ...currentSample });
+                    return;
+                }
+                const p = premises[index];
+                const stepSize = (p.max - p.min) / STEPS;
+                for (let i = 0; i <= STEPS; i++) {
+                    const val = p.min + i * stepSize;
+                    currentSample[p.id] = val;
+                    generateGrid(index + 1, currentSample);
+                }
+            }
+            generateGrid(0, {});
+
+            // ارزیابی هر نمونه بر اساس قوانین و بازه امن
+            samples.forEach(sample => {
+                // محاسبه خروجی فازی برای این نمونه
+                const predictedOutputs = evaluateFuzzyRules(sys, sample);
+
+                let targetDev = 0; // انحراف از تارگت
+                let safePenalty = 0; // جریمه خروج از بازه امن
+
+                conclusions.forEach(c => {
+                    const predVal = predictedOutputs[c.id];
+                    const targetVal = targets[c.id];
+                    targetDev += Math.pow(predVal - targetVal, 2);
+
+                    // بررسی خروج از بازه امن
+                    const sMin = c.safeMin ?? c.min;
+                    const sMax = c.safeMax ?? c.max;
+                    if (predVal < sMin) safePenalty += Math.pow(sMin - predVal, 2) * 5;
+                    if (predVal > sMax) safePenalty += Math.pow(predVal - sMax, 2) * 5;
+                });
+
+                const totalScore = targetDev + safePenalty;
+                if (totalScore < minScore) {
+                    minScore = totalScore;
+                    bestSample = { sample, predictedOutputs, safePenalty };
+                }
+            });
+
+            // نمایش نتیجه
+            const resultsDiv = document.getElementById('productivityResults');
+            const outputText = document.getElementById('optimizationOutputText');
+            resultsDiv.classList.remove('hidden');
+
+            let html = `<div class="p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl mb-3">`;
+            html += `<p class="font-bold text-emerald-700 dark:text-emerald-400">پیشنهاد بهینه سیستم برای دستیابی به تارگت:</p><ul class="list-disc list-inside mt-2 space-y-1">`;
+
+            premises.forEach(p => {
+                const val = bestSample.sample[p.id].toFixed(2);
+                html += `<li>متغیر ورودی <b>${p.name}</b> باید روی مقدار <span class="font-bold text-brand-600 dark:text-brand-400">${val}</span> تنظیم شود.</li>`;
+            });
+
+            html += `</ul></div>`;
+
+            html += `<div class="p-4 bg-slate-50 dark:bg-slate-900/40 rounded-xl space-y-2 text-xs">`;
+            html += `<p class="font-bold">خروجی تخمینی مدل فازی با این تنظیمات:</p>`;
+            conclusions.forEach(c => {
+                const pred = bestSample.predictedOutputs[c.id].toFixed(2);
+                const sMin = c.safeMin ?? c.min;
+                const sMax = c.safeMax ?? c.max;
+                const isSafe = pred >= sMin && pred <= sMax;
+
+                html += `<div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 py-1">
+                    <span>${c.name}: <b>${pred}</b> (تارگت: ${targets[c.id]})</span>
+                    <span class="px-2 py-0.5 rounded font-bold ${isSafe ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+                        ${isSafe ? '✓ در بازه امن' : '✕ خارج از بازه امن'}
+                    </span>
+                </div>`;
+            });
+            html += `</div>`;
+
+            outputText.innerHTML = html;
+        }
+
+        // ارزیابی فازی به روش Mamdani با تابع گوسی
+        function evaluateFuzzyRules(sys, inputValues) {
+            const outputs = {};
+            const conclusions = sys.features.filter(f => f.type === 'conclusion');
+
+            conclusions.forEach(c => {
+                let numerator = 0;
+                let denominator = 0;
+                const cParams = getFuzzyParams(c.min, c.max);
+
+                sys.rules.forEach(rule => {
+                    const ruleConclusion = rule.conclusions.find(rc => rc.featureId === c.id);
+                    if (!ruleConclusion) return;
+
+                    // درجه اشتعال قانون (Firing Strength)
+                    let firingStrength = rule.operator === 'AND' ? 1 : 0;
+
+                    rule.premises.forEach(p => {
+                        const pFeat = sys.features.find(f => f.id === p.featureId);
+                        if (!pFeat) return;
+                        const val = inputValues[p.featureId];
+                        const params = getFuzzyParams(pFeat.min, pFeat.max)[p.value];
+                        const mu = gaussianMF(val, params.mean, params.stdev);
+
+                        if (rule.operator === 'AND') firingStrength = Math.min(firingStrength, mu);
+                        else firingStrength = Math.max(firingStrength, mu);
+                    });
+
+                    const targetMean = cParams[ruleConclusion.value].mean;
+                    numerator += firingStrength * targetMean;
+                    denominator += firingStrength;
+                });
+
+                outputs[c.id] = denominator > 0 ? (numerator / denominator) : ((c.min + c.max) / 2);
+            });
+
+            return outputs;
+        }
+
+        // --- تم شب/روز ---
         function toggleTheme() {
             const isDark = document.documentElement.classList.toggle('dark');
-            document.getElementById('themeIcon').className = isDark ? 'fa-solid fa-sun text-lg text-amber-400' : 'fa-solid fa-moon text-lg';
+            document.getElementById('themeIcon').className = isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon';
         }
 
-        function updateClock() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('currentTime').innerText = timeStr;
-        }
-
+        // --- لود اولیه ---
         window.onload = function() {
-            renderTasks();
-            renderNotes();
-            updateClock();
-            setInterval(updateClock, 1000);
+            renderAll();
         };
     </script>
 </body>
 </html>
+
