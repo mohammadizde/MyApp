@@ -1,18 +1,17 @@
 {
-  "name": "اپلیکیشن مدیریت کاربردی",
-  "short_name": "برنامه‌ریز",
+  "name": "سامانه بهینه‌سازی و سیستم‌های فازی",
+  "short_name": "سیستم فازی",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f172a",
-  "theme_color": "#0369a1",
+  "theme_color": "#0284c7",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/906/906334.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/2103/2103633.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ]
 }
-
 
