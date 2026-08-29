@@ -19,6 +19,7 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -76,19 +77,19 @@
                 <button id="tab-btn-system" onclick="switchTab('system')" 
                     class="tab-btn flex items-center justify-center gap-2 py-3 px-3 rounded-xl transition duration-200 bg-brand-600 text-white font-semibold shadow-md shadow-brand-500/20">
                     <i class="fa-solid fa-cubes"></i>
-                    <span>سیستم</span>
+                    <span>تب سیستم</span>
                 </button>
 
                 <button id="tab-btn-rules" onclick="switchTab('rules')" 
                     class="tab-btn flex items-center justify-center gap-2 py-3 px-3 rounded-xl transition duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700/50">
                     <i class="fa-solid fa-code-branch"></i>
-                    <span>قوانین</span>
+                    <span>تب قوانین</span>
                 </button>
 
                 <button id="tab-btn-productivity" onclick="switchTab('productivity')" 
                     class="tab-btn flex items-center justify-center gap-2 py-3 px-3 rounded-xl transition duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700/50">
                     <i class="fa-solid fa-chart-line"></i>
-                    <span>بهره‌وری</span>
+                    <span>تب بهره‌وری</span>
                 </button>
             </nav>
         </div>
@@ -128,11 +129,24 @@
 
         <!-- ================= تب ۲: قوانین فازی ================= -->
         <section id="tab-content-rules" class="tab-content space-y-6">
-            <!-- فرم ساخت قانون جدید -->
+            <!-- تولید خودکار قانون توسط هوش مصنوعی -->
+            <div class="bg-gradient-to-r from-indigo-900/10 to-purple-900/10 bg-white dark:bg-slate-800 rounded-2xl p-6 border border-indigo-200 dark:border-indigo-900/50 shadow-sm">
+                <h2 class="text-base font-bold mb-2 flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                    تولید هوشمند قانون فازی با هوش مصنوعی (AI)
+                </h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">متغیرهای ورودی و خروجی مدنظر را انتخاب کنید تا هوش مصنوعی قوانین منطقی متناسب با دانش خود تولید کند.</p>
+
+                <div id="aiRuleGeneratorContainer" class="space-y-4">
+                    <!-- چک‌باکس‌های انتخابی هوش مصنوعی -->
+                </div>
+            </div>
+
+            <!-- فرم ساخت دستی قانون جدید -->
             <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
                 <h2 class="text-base font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-slate-100">
                     <i class="fa-solid fa-diagram-project text-indigo-500"></i>
-                    افزودن قانون فازی جدید (If ... Then)
+                    افزودن دستی قانون فازی جدید (If ... Then)
                 </h2>
 
                 <div id="ruleBuilderContainer" class="space-y-4">
@@ -199,6 +213,9 @@
 
     <!-- اسکریپت اصلی برنامه -->
     <script>
+        // API Key برای استفاده از هوش مصنوعی در محیط آنلاین
+        const apiKey = "";
+
         // --- ساختار داده‌ها (State) ---
         let appData = JSON.parse(localStorage.getItem('fuzzy_app_data')) || {
             activeSystemId: 1,
@@ -397,10 +414,198 @@
 
         // ================= مدیریت تب قوانین =================
         function renderRulesTab() {
-            const sys = getActiveSystem();
+            renderAIRuleGenerator();
             renderRuleBuilder();
             renderRulesList();
             renderSafeZones();
+        }
+
+        // --- تولید قانون توسط هوش مصنوعی ---
+        function renderAIRuleGenerator() {
+            const sys = getActiveSystem();
+            const premises = sys.features.filter(f => f.type === 'premise');
+            const conclusions = sys.features.filter(f => f.type === 'conclusion');
+
+            const container = document.getElementById('aiRuleGeneratorContainer');
+
+            if (premises.length === 0 || conclusions.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400">برای تولید هوشمند قانون، ابتدا حداقل یک ورودی و یک خروجی در تب سیستم تعریف کنید.</p>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <span class="block text-xs font-bold text-indigo-500 mb-2">انتخاب ورودی‌ها (Premise):</span>
+                        <div class="space-y-1.5 max-h-36 overflow-y-auto">
+                            ${premises.map(p => `
+                                <label class="flex items-center gap-2 text-xs cursor-pointer">
+                                    <input type="checkbox" value="${p.id}" class="ai-premise-checkbox rounded text-indigo-600 focus:ring-indigo-500">
+                                    <span>${p.name}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <span class="block text-xs font-bold text-emerald-500 mb-2">انتخاب خروجی‌ها (Conclusion):</span>
+                        <div class="space-y-1.5 max-h-36 overflow-y-auto">
+                            ${conclusions.map(c => `
+                                <label class="flex items-center gap-2 text-xs cursor-pointer">
+                                    <input type="checkbox" value="${c.id}" class="ai-conclusion-checkbox rounded text-emerald-600 focus:ring-emerald-500">
+                                    <span>${c.name}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <button id="generateAIRuleBtn" onclick="generateAIRule()" class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl text-xs font-bold transition shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>تولید خودکار قانون با AI</span>
+                    </button>
+                    <span id="aiLoadingStatus" class="hidden text-xs text-indigo-500 font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> در حال تحلیل و تولید توسط هوش مصنوعی...
+                    </span>
+                </div>
+            `;
+        }
+
+        async function generateAIRule() {
+            const sys = getActiveSystem();
+            const selectedPremiseIds = Array.from(document.querySelectorAll('.ai-premise-checkbox:checked')).map(cb => cb.value);
+            const selectedConclusionIds = Array.from(document.querySelectorAll('.ai-conclusion-checkbox:checked')).map(cb => cb.value);
+
+            if (selectedPremiseIds.length === 0 || selectedConclusionIds.length === 0) {
+                alert('لطفاً حداقل یک متغیر ورودی (Premise) و یک متغیر خروجی (Conclusion) را تیک بزنید.');
+                return;
+            }
+
+            const selectedPremises = sys.features.filter(f => selectedPremiseIds.includes(f.id));
+            const selectedConclusions = sys.features.filter(f => selectedConclusionIds.includes(f.id));
+
+            const btn = document.getElementById('generateAIRuleBtn');
+            const status = document.getElementById('aiLoadingStatus');
+            btn.disabled = true;
+            status.classList.remove('hidden');
+
+            const prompt = `System Domain/Context: ${sys.name} - ${sys.description}.
+Premise Variables: ${selectedPremises.map(p => p.name).join(', ')}.
+Conclusion Variables: ${selectedConclusions.map(c => c.name).join(', ')}.
+
+Generate a logical fuzzy rule using domain knowledge. The linguistic values MUST be chosen from ['low', 'medium', 'high'].
+The logical operator between premises MUST be either 'AND' or 'OR'.
+
+Return ONLY a valid JSON object matching this schema:
+{
+  "premises": [
+    {"featureName": "exact_premise_name", "value": "low|medium|high"}
+  ],
+  "operator": "AND|OR",
+  "conclusions": [
+    {"featureName": "exact_conclusion_name", "value": "low|medium|high"}
+  ]
+}`;
+
+            let delay = 1000;
+            let success = false;
+            let resultData = null;
+
+            for (let attempt = 0; attempt < 5; attempt++) {
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: prompt }] }],
+                            generationConfig: {
+                                responseMimeType: "application/json",
+                                responseSchema: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        premises: {
+                                            type: "ARRAY",
+                                            items: {
+                                                type: "OBJECT",
+                                                properties: {
+                                                    featureName: { type: "STRING" },
+                                                    value: { type: "STRING", enum: ["low", "medium", "high"] }
+                                                },
+                                                required: ["featureName", "value"]
+                                            }
+                                        },
+                                        operator: { type: "STRING", enum: ["AND", "OR"] },
+                                        conclusions: {
+                                            type: "ARRAY",
+                                            items: {
+                                                type: "OBJECT",
+                                                properties: {
+                                                    featureName: { type: "STRING" },
+                                                    value: { type: "STRING", enum: ["low", "medium", "high"] }
+                                                },
+                                                required: ["featureName", "value"]
+                                            }
+                                        }
+                                    },
+                                    required: ["premises", "operator", "conclusions"]
+                                }
+                            }
+                        })
+                    });
+
+                    if (response.ok) {
+                        const resJson = await response.json();
+                        const text = resJson.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (text) {
+                            resultData = JSON.parse(text);
+                            success = true;
+                            break;
+                        }
+                    }
+                } catch (e) {
+                    // Retry silently
+                }
+                await new Promise(r => setTimeout(r, delay));
+                delay *= 2;
+            }
+
+            btn.disabled = false;
+            status.classList.add('hidden');
+
+            if (!success || !resultData) {
+                alert('خطا در برقراری ارتباط با هوش مصنوعی. لطفاً دوباره تلاش کنید.');
+                return;
+            }
+
+            // نگاشت داده‌های تولید شده AI به شناسه فیچرهای سیستم
+            const rulePremises = [];
+            resultData.premises.forEach(p => {
+                const feat = selectedPremises.find(f => f.name.toLowerCase() === p.featureName.toLowerCase()) || selectedPremises[0];
+                if (feat) {
+                    rulePremises.push({ featureId: feat.id, value: p.value });
+                }
+            });
+
+            const ruleConclusions = [];
+            resultData.conclusions.forEach(c => {
+                const feat = selectedConclusions.find(f => f.name.toLowerCase() === c.featureName.toLowerCase()) || selectedConclusions[0];
+                if (feat) {
+                    ruleConclusions.push({ featureId: feat.id, value: c.value });
+                }
+            });
+
+            if (rulePremises.length > 0 && ruleConclusions.length > 0) {
+                const newRule = {
+                    id: 'r_' + Date.now(),
+                    premises: rulePremises,
+                    operator: resultData.operator || 'AND',
+                    conclusions: ruleConclusions
+                };
+
+                sys.rules.push(newRule);
+                saveData();
+            }
         }
 
         function renderRuleBuilder() {
@@ -462,7 +667,7 @@
                     </div>
 
                     <button onclick="saveRuleFromBuilder()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition">
-                        ثبت قانون فازی
+                        ثبت دستی قانون فازی
                     </button>
                 </div>
             `;
