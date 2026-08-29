@@ -1,5 +1,5 @@
 // ورژن کش به v4 ارتقا یافت تا تغییرات فوراً اعمال گردند
-const CACHE_NAME = 'fuzzy-app-v4';
+const CACHE_NAME = 'fuzzy-app-v5';
 
 const urlsToCache = [
   './index.html',
