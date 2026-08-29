@@ -1,12 +1,11 @@
-// هر بار کدی تغییر دادید نسخه را یک عدد بالا ببرید (v1 -> v2 -> v3)
-const CACHE_NAME = 'fuzzy-app-v3';
+// ورژن کش به v4 ارتقا یافت تا تغییرات فوراً اعمال گردند
+const CACHE_NAME = 'fuzzy-app-v4';
 
 const urlsToCache = [
   './index.html',
   './manifest.json'
 ];
 
-// نصب و جایگزینی سریع سرویس ورکر جدید
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
@@ -15,7 +14,6 @@ self.addEventListener('install', event => {
   );
 });
 
-// پاک کردن کش‌های قدیمی
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
@@ -35,3 +33,4 @@ self.addEventListener('fetch', event => {
     fetch(event.request).catch(() => caches.match(event.request))
   );
 });
+
