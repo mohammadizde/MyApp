@@ -1,5 +1,5 @@
 // هر بار کدی تغییر دادید نسخه را یک عدد بالا ببرید (v1 -> v2 -> v3)
-const CACHE_NAME = 'fuzzy-app-v2';
+const CACHE_NAME = 'fuzzy-app-v3';
 
 const urlsToCache = [
   './index.html',
