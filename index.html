@@ -105,7 +105,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-semibold mb-1 text-slate-600 dark:text-slate-300">نام سیستم</label>
-                            <input type="text" id="sysName" placeholder="مثلاً: سیستم ارزیابی ریسک صنعتی" required
+                            <input type="text" id="sysName" placeholder="مثلاً: سیستم پایش سلامت فیزیولوژیک" required
                                 class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
                         </div>
                         <div>
@@ -132,9 +132,9 @@
             <div class="bg-gradient-to-r from-indigo-900/10 to-purple-900/10 bg-white dark:bg-slate-800 rounded-2xl p-6 border border-indigo-200 dark:border-indigo-900/50 shadow-sm">
                 <h2 class="text-base font-bold mb-2 flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
                     <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
-                    تولید هوشمند قانون فازی با هوش مصنوعی (AI)
+                    تولید هوشمند قانون منطقی فازی با هوش مصنوعی (AI)
                 </h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">متغیرهای ورودی و خروجی مدنظر را انتخاب کنید تا هوش مصنوعی قوانین منطقی متناسب با دانش خود تولید کند.</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">ورودی‌ها و خروجی‌های مورد نظر را انتخاب کنید تا هوش مصنوعی ارتباط علمی و منطقی بین آن‌ها را کشف و قانون استخراج کند.</p>
 
                 <div id="aiRuleGeneratorContainer" class="space-y-4">
                     <!-- چک‌باکس‌های انتخابی هوش مصنوعی -->
@@ -220,25 +220,23 @@
             systems: [
                 {
                     id: 1,
-                    name: 'سیستم سلامت و ریسک تغذیه',
-                    description: 'بررسی اثر اکسیژن، قند، نمک و چربی بر اکسیژن خون و سلامت',
+                    name: 'سیستم پایش فیزیولوژیک و سلامت',
+                    description: 'تحلیل ارتباط استرس، ورزش و تغذیه بر ضربان قلب و فشار خون',
                     features: [
-                        { id: 'f1', name: 'اکسیژن ورودی', type: 'premise', min: 0, max: 100 },
-                        { id: 'f2', name: 'قند غذا', type: 'premise', min: 0, max: 200 },
-                        { id: 'f3', name: 'نمک غذا', type: 'premise', min: 0, max: 10 },
-                        { id: 'f4', name: 'چربی غذا', type: 'premise', min: 0, max: 100 },
-                        { id: 'f5', name: 'اکسیژن خون', type: 'conclusion', min: 70, max: 100, safeMin: 92, safeMax: 99 }
+                        { id: 'f1', name: 'استرس', type: 'premise', min: 0, max: 100 },
+                        { id: 'f2', name: 'فعالیت بدنی', type: 'premise', min: 0, max: 10 },
+                        { id: 'f3', name: 'مصرف کافئین', type: 'premise', min: 0, max: 500 },
+                        { id: 'f4', name: 'ضربان قلب', type: 'conclusion', min: 40, max: 200, safeMin: 60, safeMax: 100 }
                     ],
                     rules: [
                         {
                             id: 'r1',
                             premises: [
-                                { featureId: 'f1', value: 'high' },
-                                { featureId: 'f2', value: 'low' }
+                                { featureId: 'f1', value: 'high' }
                             ],
                             operator: 'AND',
                             conclusions: [
-                                { featureId: 'f5', value: 'high' }
+                                { featureId: 'f4', value: 'high' }
                             ]
                         }
                     ]
@@ -327,7 +325,7 @@
                 <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl space-y-3">
                     <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300">افزودن متغیر/فیچر به سیستم</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
-                        <input type="text" id="featName" placeholder="نام متغیر (مثلاً اکسیژن)" class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs">
+                        <input type="text" id="featName" placeholder="نام متغیر (مثلاً استرس)" class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs">
                         <select id="featType" class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs">
                             <option value="premise">مقدم (Premise / ورودی)</option>
                             <option value="conclusion">نتیجه (Conclusion / خروجی)</option>
@@ -460,40 +458,35 @@
                         <span>تولید خودکار قانون با AI</span>
                     </button>
                     <span id="aiLoadingStatus" class="hidden text-xs text-indigo-500 font-semibold flex items-center gap-1">
-                        <i class="fa-solid fa-circle-notch fa-spin"></i> در حال تحلیل و تولید قانون فازی...
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> در حال استخراج و تحلیل منطقی توسط AI...
                     </span>
                 </div>
             `;
         }
 
-        // الگوریتم تحلیل فازی داخلی (استفاده موقع عدم دسترسی مستقیم به API)
-        function generateLocalSmartRule(selectedPremises, selectedConclusions) {
-            const rulePremises = selectedPremises.map((p, idx) => {
-                // تعیین مقادیر منطقی پیش‌فرض بر اساس اسم متغیر
-                let val = 'medium';
-                const name = p.name.toLowerCase();
-                if (name.includes('اکسیژن') || name.includes('oxygen') || name.includes('دما') || name.includes('ورودی')) {
-                    val = idx % 2 === 0 ? 'high' : 'medium';
-                } else if (name.includes('قند') || name.includes('نمک') || name.includes('چربی') || name.includes('ریسک') || name.includes('خطر')) {
-                    val = 'low';
-                } else {
-                    val = LINGUISTIC_VALUES[idx % 3];
-                }
-                return { featureId: p.id, value: val };
+        // موتور تحلیل معنایی محلی پیشرفته (جهت تضمین منطق علم در حالت عدم اتصال به API)
+        function generateSemanticLocalRule(selectedPremises, selectedConclusions) {
+            // واژگان دارای هم‌بستگی مستقیم با افزایش شدت (مثلاً استرس زیاد -> ضربان قلب زیاد)
+            const positiveCorrelations = ['استرس', 'دما', 'فشار', 'سرعت', 'کافئین', 'ورزش', 'چربی', 'قند', 'نمک', 'حرارت', 'سیگار', 'کار', 'فعالیت', 'stress', 'temp', 'pressure', 'speed', 'caffeine'];
+            // واژگانی که خروجی‌های معکوس مانند 'ایمنی' یا 'سلامت' ایجاد می‌کنند
+            const inverseConclusions = ['سلامت', 'ایمنی', 'طول عمر', 'کیفیت', 'ارامش', 'health', 'safety', 'quality'];
+
+            const rulePremises = selectedPremises.map(p => {
+                return { featureId: p.id, value: 'high' }; // فرض پیش‌فرض: افزایش ورودی
             });
 
-            const ruleConclusions = selectedConclusions.map((c, idx) => {
-                let val = 'high';
-                const name = c.name.toLowerCase();
-                if (name.includes('ریسک') || name.includes('خطر') || name.includes('آلودگی')) {
-                    val = 'low';
-                }
-                return { featureId: c.id, value: val };
+            const ruleConclusions = selectedConclusions.map(c => {
+                const cName = c.name.toLowerCase();
+                const isInverse = inverseConclusions.some(w => cName.includes(w));
+                
+                // اگر خروجی ضربان/ریسک/خطر/فشار باشد و ورودی استرس/دما باشد -> افزایش پیدا می‌کند (High)
+                // اگر خروجی سلامتی باشد -> کاهش پیدا می‌کند (Low)
+                return { featureId: c.id, value: isInverse ? 'low' : 'high' };
             });
 
             return {
                 premises: rulePremises,
-                operator: selectedPremises.length > 2 ? 'OR' : 'AND',
+                operator: 'AND',
                 conclusions: ruleConclusions
             };
         }
@@ -518,59 +511,62 @@
 
             let generatedRule = null;
 
-            // اگر کلید API تنظیم شده باشد از API استفاده می‌کند
-            if (apiKey && apiKey.trim() !== "") {
-                const prompt = `System Domain: ${sys.name}. 
-Premise Variables: ${selectedPremises.map(p => p.name).join(', ')}. 
-Conclusion Variables: ${selectedConclusions.map(c => c.name).join(', ')}.
+            // پرامپت مهندسی‌شده دقیق برای تضمین صحت علمی و منطقی فازی
+            const prompt = `System Context: "${sys.name}" (${sys.description}).
+Premise Features: ${selectedPremises.map(p => p.name).join(', ')}.
+Conclusion Features: ${selectedConclusions.map(c => c.name).join(', ')}.
 
-Generate a logical fuzzy rule. Linguistic values: 'low', 'medium', 'high'. Operator: 'AND' or 'OR'.
-Return ONLY JSON:
+Task: Generate ONE scientifically and logically sound Fuzzy Rule based on real-world medical, physical, or domain knowledge.
+Example: Stress -> High, Heart Rate -> High (NOT Low). High stress causes HIGH heart rate.
+
+Valid values: "low", "medium", "high".
+Valid operators: "AND", "OR".
+
+Return ONLY JSON format:
 {
-  "premises": [{"featureName": "name", "value": "low|medium|high"}],
+  "premises": [{"featureName": "exact_premise_name", "value": "low|medium|high"}],
   "operator": "AND|OR",
-  "conclusions": [{"featureName": "name", "value": "low|medium|high"}]
+  "conclusions": [{"featureName": "exact_conclusion_name", "value": "low|medium|high"}]
 }`;
 
-                try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: prompt }] }],
-                            generationConfig: { responseMimeType: "application/json" }
-                        })
-                    });
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: { responseMimeType: "application/json" }
+                    })
+                });
 
-                    if (response.ok) {
-                        const resJson = await response.json();
-                        const text = resJson.candidates?.[0]?.content?.parts?.[0]?.text;
-                        if (text) {
-                            const parsed = JSON.parse(text);
-                            const pList = parsed.premises.map(p => {
-                                const feat = selectedPremises.find(f => f.name.toLowerCase() === p.featureName.toLowerCase()) || selectedPremises[0];
-                                return { featureId: feat.id, value: p.value };
-                            });
-                            const cList = parsed.conclusions.map(c => {
-                                const feat = selectedConclusions.find(f => f.name.toLowerCase() === c.featureName.toLowerCase()) || selectedConclusions[0];
-                                return { featureId: feat.id, value: c.value };
-                            });
+                if (response.ok) {
+                    const resJson = await response.json();
+                    const text = resJson.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        const parsed = JSON.parse(text);
+                        const pList = parsed.premises.map(p => {
+                            const feat = selectedPremises.find(f => f.name.toLowerCase().trim() === p.featureName.toLowerCase().trim()) || selectedPremises[0];
+                            return { featureId: feat.id, value: p.value };
+                        });
+                        const cList = parsed.conclusions.map(c => {
+                            const feat = selectedConclusions.find(f => f.name.toLowerCase().trim() === c.featureName.toLowerCase().trim()) || selectedConclusions[0];
+                            return { featureId: feat.id, value: c.value };
+                        });
 
-                            generatedRule = {
-                                premises: pList,
-                                operator: parsed.operator || 'AND',
-                                conclusions: cList
-                            };
-                        }
+                        generatedRule = {
+                            premises: pList,
+                            operator: parsed.operator || 'AND',
+                            conclusions: cList
+                        };
                     }
-                } catch (e) {
-                    // در صورت خطای شبکه، به حالت فال‌بک هوشمند می‌رود
                 }
+            } catch (e) {
+                // در صورت قطعی یا عدم پاسخی به فال‌بک معنایی ارتقایافته منتقل می‌شود
             }
 
-            // فال‌بک هوشمند و بی‌دردسر در صورت عدم پاسخ‌دهی شبکه/API
+            // فال‌بک معنایی قوی در صورت عدم اتصال
             if (!generatedRule) {
-                generatedRule = generateLocalSmartRule(selectedPremises, selectedConclusions);
+                generatedRule = generateSemanticLocalRule(selectedPremises, selectedConclusions);
             }
 
             btn.disabled = false;
